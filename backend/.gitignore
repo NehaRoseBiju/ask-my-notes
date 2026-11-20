@@ -1,0 +1,26 @@
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Environment variables & secrets (keeps your GROQ_API_KEY safe)
+.env
+.env.*
+
+# ChromaDB local vector database storage
+notes_db/
+
+# Uploaded or local PDF notes (optional: remove if you want sample PDFs on GitHub)
+docs/*.pdf
+
+# Python cache & compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
