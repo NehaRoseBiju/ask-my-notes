@@ -6,6 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from groq import Groq
 from ingest import collection
+from fastapi import UploadFile
+from ingest import add_pdf
+
 
 load_dotenv()                                  # read the .env file
 ai = Groq(api_key=os.getenv("GROQ_API_KEY"))   # the AI brain
@@ -51,3 +54,12 @@ Question: {q.question}"""
     )
     answer = reply.choices[0].message.content
     return {"answer": answer, "sources": sources}
+
+@app.post("/upload")
+def upload(file: UploadFile):
+    name = os.path.basename(file.filename)
+    path = os.path.join("docs", name)
+    with open(path, "wb") as f:
+        f.write(file.file.read())
+    count = add_pdf(path)
+    return {"message": f"Added {name} ({count} pieces). Ask me!"}

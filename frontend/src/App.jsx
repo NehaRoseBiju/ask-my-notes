@@ -20,6 +20,11 @@ function App() {
     setMessages((old) => [...old, msg]);
   }
 
+  // Empties the chat
+  function clearMessages() {
+    setMessages([]);
+  }
+
   // Runs when you press Ask
   async function askQuestion() {
     if (!question.trim()) return;
@@ -43,6 +48,25 @@ function App() {
     setLoading(false);
   }
 
+  // BONUS: runs when you pick a PDF file
+  async function uploadPdf(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const form = new FormData();
+    form.append("file", file);
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/upload`, { method: "POST", body: form });
+      if (!res.ok) throw new Error("Upload error");
+      const data = await res.json();
+      addMessage({ role: "bot", text: data.message });
+    } catch {
+      addMessage({ role: "bot", text: "Upload failed. Try again." });
+    }
+    setLoading(false);
+    e.target.value = ""; // allows re-uploading the same file if needed
+  }
+
   // What you see on the screen
   return (
     <div className="app">
@@ -60,6 +84,10 @@ function App() {
         {loading && <div className="msg bot">Thinking… 🤔</div>}
       </div>
       <div className="ask-box">
+        <label className="upload">
+          📎 PDF
+          <input type="file" accept=".pdf" hidden onChange={uploadPdf} />
+        </label>
         <input
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
@@ -68,6 +96,9 @@ function App() {
         />
         <button onClick={askQuestion} disabled={loading}>
           Ask
+        </button>
+        <button className="clear" onClick={clearMessages}>
+          Clear
         </button>
       </div>
     </div>
